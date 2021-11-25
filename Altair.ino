@@ -7,18 +7,17 @@
 #define LEDD        7      // led derecho
 #define LEDI        8      // led izquierdo
 #define TURB        9      // Turbina
-#define LON         A0     // Led ON Regleta
+#define muxSIG      A0     // Led ON Regleta
 #define muxS0       A1     // pin s0 canal
 #define muxS1       A2     // pin s1 canal
 #define muxS2       A3     // pin s2 canal
 #define muxS3       A4     // pin s3 canal
-#define muxSIG      A5     // pin OUT multiplexor
+
 
 //Paramatros de sensores QTR
 #define N_SENSORES  16     // numero de sensores
 #define REFERENCIA  7500
 #define UMBRAL_MIN  79
-#define LINEA       true  //blanca F, negra T
 
 unsigned long sensorValor[N_SENSORES];
 unsigned int sensorValorMAX[N_SENSORES];
@@ -28,7 +27,7 @@ unsigned long posicionLinea;
 int error[8];
 
 //:::::::::::::::: A J U S T E S  P I D ::::::::::::::::::::::::
-const int velMax = 180; //100  //190     //220      //240
+const int velMax = 100; //100  //190     //220      //240
 const int velFrenoMax = 100;
 const int velFrenoMin = 90;
 const int velTurbina = 1450;  
@@ -63,9 +62,7 @@ void setup()
 
   pinMode(LEDI, OUTPUT);
   pinMode(LEDD, OUTPUT);
-  pinMode(LON, OUTPUT);
-  
-  pinMode(LON, OUTPUT);
+
   pinMode(muxS0, OUTPUT);
   pinMode(muxS1, OUTPUT);
   pinMode(muxS2, OUTPUT);
@@ -73,9 +70,8 @@ void setup()
   Serial.begin(9600);
 
   //activar/desactivar motores, regleta y turbina
-  setMotores(0,0);
-  digitalWrite(LON,1);
-  activo=true;
+  setMotores(0,0);;
+  //activo=true;
 
   // ***************** CALIBRANDO *****************
   esperarBoton();
@@ -92,8 +88,12 @@ void setup()
   esperarBoton();
   //velocidadTurbina(activo, velTurbina);
   esperarTrigger();
+
+  for(int i = 10;i<100;i+=10){
+    setMotores(i,i);
+    delay(50);
+   }
   
-  setMotores(100,100);
   delay(120);
 }
 
@@ -104,7 +104,7 @@ void loop()
     //velocidadTurbina(true, 1000);
     diferenciaPwr = 0;
   }else{
-    //calcularPID();
+    calcularPID();
     //frenosContorno();
     //verPosicionPwr();
     //verValores();
@@ -178,7 +178,7 @@ void esperarTrigger(){
 
 //******************* MOTORES *******************
 void setMotores(int motor_izq, int motor_der) {
-  motores.setSpeeds(-motor_izq, motor_der);
+  motores.setSpeeds(motor_izq, motor_der);
 }
 
 //******************* TURBIN> *******************
