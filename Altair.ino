@@ -1,5 +1,5 @@
-#include <OrangutanMotors.h> //libreria motores
-//#include <ESC.h> // libreria turbina
+ #include <OrangutanMotors.h> //libreria motores
+ #include <ESC.h> // libreria turbina
 
 //Pines a usar
 #define BOTON       2      // Boton
@@ -27,15 +27,15 @@ unsigned long posicionLinea;
 int error[8];
 
 //:::::::::::::::: A J U S T E S  P I D ::::::::::::::::::::::::
-const int velMax = 100; //100  //190     //220      //240
+const int velMax = 150;     //220      //240
 const int velFrenoMax = 100;
 const int velFrenoMin = 90;
 const int velTurbina = 1450;  
 
 
-float kP = 0.0312 ;  //0.0107 //.0259  //.03195   //.03389
-float kI = 0.0005; //0.00035 //.00025   //.00025 
-float kD = 0.374;   //0.214    //.397    //.357    //.384
+float kP = 0.0240;  //.03195   //.03389
+float kI = 0.00025;   //.00025 
+float kD = 0.280;    //.357    //.384
 
 //vel 115   
 //p .01534  
@@ -53,7 +53,7 @@ boolean activo;
 
 
 OrangutanMotors motores;
-//ESC turbina(TURB);
+ESC turbina(TURB);
 
 void setup()  
 {
@@ -71,7 +71,7 @@ void setup()
 
   //activar/desactivar motores, regleta y turbina
   setMotores(0,0);;
-  //activo=true;
+  activo=false;
 
   // ***************** CALIBRANDO *****************
   esperarBoton();
@@ -82,11 +82,11 @@ void setup()
   iniciarlizarVariables();
   verMAXMIN();
   
-  //iniciarTurbina(activo);
+  iniciarTurbina(activo);
   delay(100);
 
   esperarBoton();
-  //velocidadTurbina(activo, velTurbina);
+  velocidadTurbina(false, velTurbina);
   esperarTrigger();
 
   for(int i = 10;i<100;i+=10){
@@ -101,7 +101,7 @@ void loop()
 {
   if (!digitalRead(TRIG)){ 
     setMotores(0,0);
-    //velocidadTurbina(true, 1000);
+    velocidadTurbina(true, 1000);
     diferenciaPwr = 0;
   }else{
     calcularPID();
@@ -139,7 +139,7 @@ void calcularPID() {
   error[1] = error[0];
   error[0] = proporcional;      
   
-  derivada = proporcional - error[5];
+  derivada = proporcional - error[7];
   /*
   if(integral>30000 || integral <-30000){
     frenosContorno();
@@ -184,13 +184,13 @@ void setMotores(int motor_izq, int motor_der) {
 //******************* TURBIN> *******************
 void iniciarTurbina(boolean activo){
   if(activo){
-    //turbina.init();
+    turbina.init();
   }
 }
 
 void velocidadTurbina(boolean activar, int velocidad){
   if(activar){
-    //turbina.setSpeed(velocidad);
+    turbina.setSpeed(velocidad);
   }
 }
 
